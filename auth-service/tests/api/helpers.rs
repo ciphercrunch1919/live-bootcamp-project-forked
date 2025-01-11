@@ -50,12 +50,17 @@ impl TestApp {
     }
 
     pub async fn post_login(&self, email: &str, password: &str) -> reqwest::Response {
+        #[derive(serde::Serialize)]
+        struct LoginRequest<'a> {
+            email: &'a str,
+            password: &'a str,
+        }
+
+        let login_request = LoginRequest { email, password };
+
         self.http_client
             .post(&format!("{}/login", &self.address))
-            .json(serde_json::json!({
-                "email": email,
-                "password": password,
-            }))
+            .json(&login_request)
             .send()
             .await
             .expect("Failed to execute request.")
@@ -72,7 +77,7 @@ impl TestApp {
     pub async fn post_verify_2fa(&self, code: &str) -> reqwest::Response {
         self.http_client
             .post(&format!("{}/verify-2fa", &self.address))
-            .json(serde_json::json!({
+            .json(&serde_json::json!({
                 "code": code,
             }))
             .send()
@@ -83,7 +88,7 @@ impl TestApp {
     pub async fn post_verify_token(&self, token: &str) -> reqwest::Response {
         self.http_client
             .post(&format!("{}/verify-token", &self.address))
-            .json(serde_json::json!({
+            .json(&serde_json::json!({
                 "token": token,
             }))
             .send()

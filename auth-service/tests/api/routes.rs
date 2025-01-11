@@ -17,10 +17,11 @@ async fn root_returns_auth_ui() {
 async fn signup_returns_200() {
     let app = TestApp::new().await;
 
-    let response = app.post_signup(serde_json::json!({
+    let signup_data = serde_json::json!({
         "email": "email@example.com",
         "password": "password",
-    })).await;
+    });
+    let response = app.post_signup(&signup_data).await;
 
     assert_eq!(response.status().as_u16(), 200);
 }
@@ -29,7 +30,7 @@ async fn signup_returns_200() {
 async fn login_returns_200() {
     let app = TestApp::new().await;
 
-    let response = app.login("email@example.com", "password").await;
+    let response = app.post_login("email@example.com", "password").await;
 
     assert_eq!(response.status().as_u16(), 200);
 }
